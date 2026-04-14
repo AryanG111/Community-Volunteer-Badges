@@ -19,7 +19,8 @@ const signup = async (req, res) => {
 
         user = await User.create({
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            name: req.body.name || ''
         });
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
