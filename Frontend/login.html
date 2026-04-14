@@ -3,33 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up | Community Volunteer Badges</title>
+  <title>Login | Community Volunteer Badges</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <h1>Create your account</h1>
-      <p>Register with your email and password to join the volunteer badges community.</p>
+      <h1>Login</h1>
+      <p>Enter your credentials to access your volunteer account.</p>
 
-      <form id="signup-form">
+      <form id="login-form">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" required placeholder="you@example.com" />
 
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" required minlength="6" placeholder="At least 6 characters" />
+        <input type="password" id="password" name="password" required placeholder="Your password" />
 
-        <button type="submit">Sign Up</button>
+        <button type="submit">Login</button>
       </form>
 
       <div id="message" class="message"></div>
       
       <p style="margin-top: 1rem; text-align: center;">
-        Already have an account? <a href="login.html">Login</a>
+        Don't have an account? <a href="index.html">Sign Up</a>
       </p>
     </div>
   </div>
 
-  <script src="signup.js"></script>
+  <script src="login.js"></script>
 </body>
 </html>
