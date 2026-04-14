@@ -1,4 +1,4 @@
-const form = document.getElementById('signup-form');
+const form = document.getElementById('login-form');
 const messageEl = document.getElementById('message');
 
 const API_BASE_URL = 'http://localhost:5000';
@@ -19,7 +19,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -30,17 +30,21 @@ form.addEventListener('submit', async (event) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Signup failed.');
+      throw new Error(data.message || 'Login failed.');
     }
 
-    messageEl.textContent = data.message || 'Signup successful!';
+    messageEl.textContent = data.message || 'Login successful!';
     messageEl.classList.add('success');
     
+    // Store JWT in localStorage
     if (data.token) {
       localStorage.setItem('token', data.token);
     }
 
     form.reset();
+    
+    // Redirect or update UI (optional, but good for UX)
+    // window.location.href = 'dashboard.html';
   } catch (error) {
     messageEl.textContent = error.message;
     messageEl.classList.add('error');
