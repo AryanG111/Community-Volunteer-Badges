@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | Community Volunteer Badges</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card profile-card">
+      <header class="profile-header">
+        <div>
+          <p class="eyebrow">Member dashboard</p>
+          <h1>Volunteer profile</h1>
+          <p class="subtitle">Track your participation, review earned badges, and see your event history.</p>
+        </div>
+        <button id="logout-btn" type="button" class="secondary-button">Log out</button>
+      </header>
+
+      <section class="summary-panel">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-label">Name</span>
+            <span id="profile-name" class="summary-value"></span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Email</span>
+            <span id="profile-email" class="summary-value"></span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Total participation</span>
+            <span id="participation-count" class="summary-value"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Earned badges</h2>
+          <p class="section-copy">Your achievements are listed below in chronological order.</p>
+        </div>
+        <ul id="badge-list" class="list"></ul>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Events attended</h2>
+          <p class="section-copy">Review the community activities you have contributed to.</p>
+        </div>
+        <ul id="events-list" class="list"></ul>
+      </section>
+
+      <div id="message" class="message"></div>
+    </div>
+  </div>
+
+  <script src="profile.js"></script>
+</body>
+</html>

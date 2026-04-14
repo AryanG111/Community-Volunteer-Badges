@@ -36,15 +36,12 @@ form.addEventListener('submit', async (event) => {
     messageEl.textContent = data.message || 'Login successful!';
     messageEl.classList.add('success');
     
-    // Store JWT in localStorage
     if (data.token) {
       localStorage.setItem('token', data.token);
+      window.location.href = 'profile.html';
     }
 
     form.reset();
-    
-    // Redirect or update UI (optional, but good for UX)
-    // window.location.href = 'dashboard.html';
   } catch (error) {
     messageEl.textContent = error.message;
     messageEl.classList.add('error');
