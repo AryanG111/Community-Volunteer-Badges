@@ -5,7 +5,7 @@ const Event = require('../models/Event');
 // @access  Public (or Private if middleware added later)
 const createEvent = async (req, res) => {
     try {
-        const { title, description, date, location, organizer } = req.body;
+        const { title, description, date, location, organizer, maxSlots } = req.body;
 
         if (!title || !description || !date || !location) {
             return res.status(400).json({ message: 'Please fill all required fields' });
@@ -16,7 +16,9 @@ const createEvent = async (req, res) => {
             description,
             date,
             location,
-            organizer
+            organizer,
+            maxSlots: maxSlots || 50,
+            availableSlots: maxSlots || 50
         });
 
         res.status(201).json(event);

@@ -25,6 +25,17 @@ const eventSchema = new mongoose.Schema({
         trim: true,
         default: 'Community'
     },
+    maxSlots: {
+        type: Number,
+        required: [true, 'Please provide maximum slots'],
+        default: 50
+    },
+    availableSlots: {
+        type: Number,
+        default: function() {
+            return this.maxSlots;
+        }
+    },
     createdAt: {
         type: Date,
         default: Date.now
