@@ -28,6 +28,28 @@ const isEventUpcoming = (eventDate) => {
   return eventTime >= now;
 };
 
+const setMessage = (text, type) => {
+  messageEl.textContent = text;
+  messageEl.className = 'message';
+  if (type) messageEl.classList.add(type);
+};
+
+const fetchRegisteredEventIds = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/registrations/my`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+    if (!response.ok) return [];
+    const registrations = await response.json();
+    return registrations.map((registration) => registration.event?._id).filter(Boolean);
+  } catch {
+    return [];
+  }
+};
+
 const handleRegistration = async (event) => {
   const button = event.target;
   const eventId = button.dataset.eventId;
@@ -38,7 +60,6 @@ const handleRegistration = async (event) => {
     return;
   }
 
-  // Disable button and show loading state
   button.disabled = true;
   button.textContent = 'Registering...';
 
@@ -53,44 +74,26 @@ const handleRegistration = async (event) => {
     });
 
     const data = await response.json();
-
     if (!response.ok) {
       throw new Error(data.message || 'Registration failed');
     }
 
-    // Success - update button and show message
     button.textContent = 'Registered!';
     button.classList.add('success');
-    messageEl.textContent = `Successfully registered for "${button.closest('.event-card').querySelector('h3').textContent}". Check your profile for details.`;
-    messageEl.className = 'message success';
+    setMessage(`Successfully registered for "${button.closest('.event-card').querySelector('h3').textContent}". Check your profile for details.`, 'success');
 
-    // Update available slots display
-    const slotsElement = button.closest('.event-card').querySelector('.detail-value');
-    const currentSlots = slotsElement.textContent.split('/');
-    const newAvailable = parseInt(currentSlots[0]) - 1;
-    slotsElement.textContent = `${newAvailable}/${currentSlots[1]}`;
+    const slotsElement = button.closest('.event-card').querySelector('.detail-row:last-child .detail-value');
+    if (slotsElement) {
+      const [available, total] = slotsElement.textContent.split('/').map((value) => parseInt(value.trim(), 10));
+      slotsElement.textContent = `${Math.max(0, available - 1)}/${total}`;
+    }
 
-    // Disable button permanently
-    button.disabled = true;
-
-    // Clear message after 5 seconds
-    setTimeout(() => {
-      messageEl.textContent = '';
-      messageEl.className = 'message';
-    }, 5000);
-
+    setTimeout(() => setMessage('', null), 5000);
   } catch (error) {
-    // Error - restore button state
     button.disabled = false;
     button.textContent = originalText;
-    messageEl.textContent = error.message;
-    messageEl.className = 'message error';
-
-    // Clear error message after 3 seconds
-    setTimeout(() => {
-      messageEl.textContent = '';
-      messageEl.className = 'message';
-    }, 3000);
+    setMessage(error.message, 'error');
+    setTimeout(() => setMessage('', null), 3000);
   }
 };
 
@@ -103,22 +106,23 @@ const loadEvents = async () => {
   try {
     const startTime = performance.now();
 
-    const response = await fetch(`${API_BASE_URL}/api/events`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const [eventsResponse, registeredIds] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/events`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      }),
+      fetchRegisteredEventIds()
+    ]);
 
-    if (!response.ok) {
+    if (!eventsResponse.ok) {
       throw new Error('Unable to load events.');
     }
 
-    const events = await response.json();
-
-    // Filter to show only upcoming events and sort by date
+    const events = await eventsResponse.json();
     const upcomingEvents = events
-      .filter(event => isEventUpcoming(event.date))
+      .filter((event) => isEventUpcoming(event.date))
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     loadingEl.remove();
@@ -128,7 +132,11 @@ const loadEvents = async () => {
       return;
     }
 
-    const eventCards = upcomingEvents.map(event => {
+    const eventCards = upcomingEvents.map((event) => {
+      const isRegistered = registeredIds.includes(event._id);
+      const disabled = isRegistered || event.availableSlots <= 0;
+      const buttonText = isRegistered ? 'Registered' : event.availableSlots <= 0 ? 'Full' : 'Register';
+
       const card = document.createElement('div');
       card.className = 'event-card';
       card.innerHTML = `
@@ -153,8 +161,8 @@ const loadEvents = async () => {
           </div>
         </div>
         <div class="event-card-footer">
-          <button class="register-btn" data-event-id="${event._id}" ${event.availableSlots <= 0 ? 'disabled' : ''}>
-            ${event.availableSlots <= 0 ? 'Full' : 'Register'}
+          <button class="register-btn" data-event-id="${event._id}" ${disabled ? 'disabled' : ''}>
+            ${buttonText}
           </button>
         </div>
       `;
@@ -163,22 +171,17 @@ const loadEvents = async () => {
 
     eventsGrid.replaceChildren(...eventCards);
 
-    // Add event listeners for register buttons
-    document.querySelectorAll('.register-btn').forEach(btn => {
-      btn.addEventListener('click', handleRegistration);
+    document.querySelectorAll('.register-btn').forEach((btn) => {
+      if (!btn.disabled) {
+        btn.addEventListener('click', handleRegistration);
+      }
     });
 
     const endTime = performance.now();
     console.log(`Events loaded in ${(endTime - startTime).toFixed(2)}ms`);
   } catch (error) {
     loadingEl.remove();
-    messageEl.textContent = error.message;
-    messageEl.classList.add('error');
-  }
-};
-    loadingEl.remove();
-    messageEl.textContent = error.message;
-    messageEl.classList.add('error');
+    setMessage(error.message, 'error');
   }
 };
 
