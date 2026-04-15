@@ -4,6 +4,6 @@ const { createEvent, getEvents } = require('../controllers/eventController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 router.post('/', protect, admin, createEvent);
-router.get('/', getEvents);
+router.get('/', protect, getEvents);
 
 module.exports = router;
