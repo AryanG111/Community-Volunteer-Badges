@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
+const initAdmin = require('./config/adminInit');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
@@ -10,8 +11,10 @@ const registrationRoutes = require('./routes/registrationRoutes');
 
 const app = express();
 
-// Connect to Database
-connectDB();
+// Connect to Database and Initialize Admin
+connectDB().then(() => {
+    initAdmin();
+});
 
 // Middleware
 app.use(cors());
