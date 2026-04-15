@@ -15,7 +15,9 @@
           <h1>Volunteer profile</h1>
           <p class="subtitle">Track your participation, review earned badges, and see your event history.</p>
         </div>
-        <button id="logout-btn" type="button" class="secondary-button">Log out</button>
+        <div class="profile-actions">
+          <button id="logout-btn" type="button" class="secondary-button">Log out</button>
+        </div>
       </header>
 
       <section class="summary-panel">
@@ -45,10 +47,27 @@
 
       <section class="section">
         <div class="section-heading">
+          <h2>My Registrations</h2>
+          <p class="section-copy">Events you have registered for and plan to attend.</p>
+        </div>
+        <ul id="registrations-list" class="list"></ul>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
           <h2>Events attended</h2>
           <p class="section-copy">Review the community activities you have contributed to.</p>
         </div>
         <ul id="events-list" class="list"></ul>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Available events</h2>
+          <p class="section-copy">Browse upcoming volunteer opportunities and join the ones that interest you.</p>
+          <a href="events.html" class="secondary-button">Browse all events</a>
+        </div>
+        <ul id="active-events-list" class="list"></ul>
       </section>
 
       <div id="message" class="message"></div>
