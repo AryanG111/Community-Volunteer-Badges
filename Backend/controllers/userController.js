@@ -15,6 +15,7 @@ const getProfile = async (req, res) => {
                 _id: user._id,
                 name: displayName,
                 email: user.email,
+                role: user.role,
                 createdAt: user.createdAt,
                 badges: user.badges || [],
                 eventsAttended: user.eventsAttended || [],
