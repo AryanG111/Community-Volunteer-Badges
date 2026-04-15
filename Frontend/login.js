@@ -53,7 +53,7 @@ form.addEventListener('submit', async (event) => {
     
     if (data.token) {
       localStorage.setItem('token', data.token);
-      const role = await getUserRole(data.token);
+      const role = data.user?.role || await getUserRole(data.token);
       const redirectPage = role === 'admin' ? 'admin.html' : 'profile.html';
       window.location.href = redirectPage;
     }
