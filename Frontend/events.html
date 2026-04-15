@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Events | Community Volunteer Badges</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card events-card">
+      <header class="profile-header">
+        <div>
+          <p class="eyebrow">Browse</p>
+          <h1>Upcoming events</h1>
+          <p class="subtitle">Explore volunteer opportunities and join the ones that interest you.</p>
+        </div>
+        <div class="profile-actions">
+          <a href="profile.html" class="secondary-button">Back to profile</a>
+          <button id="logout-btn" type="button" class="secondary-button">Log out</button>
+        </div>
+      </header>
+
+      <section class="section">
+        <div id="events-grid" class="events-grid">
+          <div id="loading" class="loading-state">Loading events...</div>
+        </div>
+        <div id="message" class="message"></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="events.js"></script>
+</body>
+</html>
