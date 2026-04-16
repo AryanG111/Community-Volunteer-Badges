@@ -238,6 +238,116 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update Registration Status (Admin Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"attended\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/registrations/registration_id_here/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"registrations",
+								"registration_id_here",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Badges",
+			"item": [
+				{
+					"name": "Get All Badges",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/badges",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"badges"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Badge (Admin Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"user_id_here\",\n    \"badgeId\": \"badge_id_here\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/badges/assign",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"badges",
+								"assign"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

@@ -8,12 +8,15 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const registrationRoutes = require('./routes/registrationRoutes');
+const badgeRoutes = require('./routes/badgeRoutes');
+const { initBadges } = require('./controllers/badgeController');
 
 const app = express();
 
 // Connect to Database and Initialize Admin
 connectDB().then(() => {
     initAdmin();
+    initBadges();
 });
 
 // Middleware
@@ -25,6 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/registrations', registrationRoutes);
+app.use('/api/badges', badgeRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

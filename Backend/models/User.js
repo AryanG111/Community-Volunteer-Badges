@@ -18,22 +18,19 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please provide a password'],
         minlength: 6
     },
-    badges: {
-        type: [
-            {
-                name: {
-                    type: String,
-                    required: true,
-                    trim: true
-                },
-                earnedAt: {
-                    type: Date,
-                    default: Date.now
-                }
+    badges: [
+        {
+            badge: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Badge'
+            },
+            name: String, // Keeping name for quick display
+            earnedAt: {
+                type: Date,
+                default: Date.now
             }
-        ],
-        default: []
-    },
+        }
+    ],
     eventsAttended: {
         type: [
             {

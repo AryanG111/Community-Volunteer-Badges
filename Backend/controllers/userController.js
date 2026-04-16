@@ -5,7 +5,9 @@ const User = require('../models/User');
 // @access  Private
 const getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).select('-password');
+        const user = await User.findById(req.user._id)
+            .select('-password')
+            .populate('badges.badge');
 
         if (user) {
             const participationCount = user.eventsAttended ? user.eventsAttended.length : 0;
