@@ -14,6 +14,11 @@ const registrationSchema = new mongoose.Schema({
     registeredAt: {
         type: Date,
         default: Date.now
+    },
+    status: {
+        type: String,
+        enum: ['registered', 'attended', 'cancelled'],
+        default: 'registered'
     }
 });
 
