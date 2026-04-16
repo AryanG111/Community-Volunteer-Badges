@@ -24,8 +24,10 @@ const redirectToLogin = () => {
 
 const isEventUpcoming = (eventDate) => {
   const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const eventTime = new Date(eventDate);
-  return eventTime >= now;
+  const eventDay = new Date(eventTime.getFullYear(), eventTime.getMonth(), eventTime.getDate());
+  return eventDay >= today;
 };
 
 const setMessage = (text, type) => {
