@@ -1,16 +1,24 @@
 const User = require('../models/User');
+const Registration = require('../models/Registration');
+const { checkAndAwardBadges } = require('./badgeController');
 
 // @desc    Get user profile
 // @route   GET /api/users/profile
 // @access  Private
 const getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id)
+        let user = await User.findById(req.user._id)
             .select('-password')
             .populate('badges.badge');
 
         if (user) {
-            const participationCount = user.eventsAttended ? user.eventsAttended.length : 0;
+            await checkAndAwardBadges(user);
+            user = await User.findById(req.user._id)
+                .select('-password')
+                .populate('badges.badge');
+
+            const attendedCount = user.eventsAttended ? user.eventsAttended.length : 0;
+            const registrationsCount = await Registration.countDocuments({ user: user._id });
             const displayName = user.name && user.name.trim() ? user.name : user.email.split('@')[0];
 
             res.status(200).json({
@@ -21,7 +29,8 @@ const getProfile = async (req, res) => {
                 createdAt: user.createdAt,
                 badges: user.badges || [],
                 eventsAttended: user.eventsAttended || [],
-                participationCount
+                attendedCount,
+                registrationsCount
             });
         } else {
             res.status(404).json({ message: 'User not found' });

@@ -201,6 +201,65 @@ button:hover {
   border: 1px solid #e2e8f0;
 }
 
+.badge-progress {
+  margin-bottom: 14px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.95rem;
+}
+
+.badge-item {
+  display: grid;
+  gap: 12px;
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.badge-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.badge-icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  background: #f8fafc;
+}
+
+.badge-bronze .badge-icon {
+  background: linear-gradient(135deg, #b36b31, #d29f6f);
+  color: #fff8f1;
+}
+
+.badge-silver .badge-icon {
+  background: linear-gradient(135deg, #9ca3af, #d1d5db);
+  color: #1f2937;
+}
+
+.badge-gold .badge-icon {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #1f2937;
+}
+
+.badge-item strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.small-text {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
 .empty-state .list li {
   color: var(--muted);
   font-style: italic;

@@ -67,6 +67,21 @@ const getMyRegistrations = async (req, res) => {
     }
 };
 
+// @desc    Get all registrations for admin review
+// @route   GET /api/registrations
+// @access  Private/Admin
+const getAllRegistrations = async (req, res) => {
+    try {
+        const registrations = await Registration.find()
+            .populate('user', 'name email')
+            .populate('event', 'title date location');
+        res.status(200).json(registrations);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 // @desc    Update registration status (Admin)
 // @route   PUT /api/registrations/:id/status
 // @access  Private/Admin
@@ -123,5 +138,6 @@ const updateRegistrationStatus = async (req, res) => {
 module.exports = {
     registerForEvent,
     getMyRegistrations,
+    getAllRegistrations,
     updateRegistrationStatus
 };
