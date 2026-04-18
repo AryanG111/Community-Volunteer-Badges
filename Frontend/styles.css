@@ -550,3 +550,103 @@ button:hover {
   margin: 2px;
 }
 
+.event-selector-container {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.event-dropdown {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  font-size: 1rem;
+  background: #fff;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.event-dropdown:hover {
+  border-color: var(--primary);
+}
+
+.event-dropdown:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.event-info-card {
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 18px;
+  color: #1d4ed8;
+}
+
+.event-info-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.event-info-card div {
+  margin: 6px 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.registration-item {
+  display: grid;
+  gap: 8px;
+}
+
+.registration-item strong {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.registration-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.registration-status.registered {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.registration-status.attended {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.registration-status.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-btn {
+  width: auto;
+  padding: 8px 12px;
+  margin-right: 8px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+.status-btn:hover {
+  transform: translateY(-1px);
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

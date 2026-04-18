@@ -254,6 +254,152 @@ const updateRegistrationStatus = async (registrationId, status) => {
   }
 };
 
+const eventSelect = document.getElementById('event-select');
+const eventRegistrationsContainer = document.getElementById('event-registrations-container');
+const eventInfoDiv = document.getElementById('event-info');
+const eventRegistrationsList = document.getElementById('event-registrations-list');
+
+const populateEventSelector = async () => {
+  if (!token) {
+    redirectToLogin();
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/events`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Unable to load events for selector.');
+    }
+
+    const events = await response.json();
+    
+    // Clear existing options except the placeholder
+    eventSelect.innerHTML = '<option value="">Choose an event...</option>';
+    
+    // Add events to dropdown
+    events.forEach((event) => {
+      const option = document.createElement('option');
+      option.value = event._id;
+      option.textContent = `${event.title} (${formatDate(event.date)})`;
+      eventSelect.appendChild(option);
+    });
+  } catch (error) {
+    setMessage(error.message, 'error');
+  }
+};
+
+const loadEventRegistrations = async (eventId) => {
+  if (!token || !eventId) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/registrations/event/${eventId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Unable to load event registrations.');
+    }
+
+    const data = await response.json();
+    const { event, registrations } = data;
+
+    // Display event info
+    eventInfoDiv.innerHTML = `
+      <h3>${event.title}</h3>
+      <div><strong>Date:</strong> ${formatDate(event.date)}</div>
+      <div><strong>Location:</strong> ${event.location}</div>
+      <div><strong>Registered Volunteers:</strong> ${event.registrationCount} / ${event.maxSlots}</div>
+    `;
+
+    // Display registrations
+    const registrationItems = renderList(
+      eventRegistrationsList,
+      registrations,
+      (registration) => {
+        const li = document.createElement('li');
+        const statusLabel = registration.status ? registration.status.charAt(0).toUpperCase() + registration.status.slice(1) : 'Registered';
+        const statusClass = registration.status || 'registered';
+        const attendedButton = registration.status !== 'attended' ? `<button class="status-btn" data-id="${registration._id}" data-status="attended">Mark attended</button>` : '';
+        const cancelButton = registration.status !== 'cancelled' ? `<button class="status-btn" data-id="${registration._id}" data-status="cancelled">Cancel</button>` : '';
+
+        li.innerHTML = `
+          <strong>${registration.user.name || registration.user.email}</strong>
+          <div>${registration.user.email}</div>
+          <div><span class="registration-status ${statusClass}">${statusLabel}</span></div>
+          <div class="button-row">${attendedButton}${cancelButton}</div>
+        `;
+        return li;
+      },
+      'No registered volunteers for this event.'
+    );
+
+    eventRegistrationsList.replaceChildren(...registrationItems);
+    
+    // Add event listeners to status buttons
+    document.querySelectorAll('#event-registrations-list .status-btn').forEach((button) => {
+      button.addEventListener('click', async (event) => {
+        const btn = event.target;
+        const registrationId = btn.dataset.id;
+        const status = btn.dataset.status;
+        await updateEventRegistrationStatus(registrationId, status);
+      });
+    });
+
+    // Show the container
+    eventRegistrationsContainer.style.display = 'block';
+  } catch (error) {
+    setMessage(error.message, 'error');
+    eventRegistrationsContainer.style.display = 'none';
+  }
+};
+
+const updateEventRegistrationStatus = async (registrationId, status) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/registrations/${registrationId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Unable to update registration status.');
+    }
+
+    setMessage(data.message, 'success');
+    // Reload the event registrations to reflect the changes
+    const selectedEventId = eventSelect.value;
+    if (selectedEventId) {
+      await loadEventRegistrations(selectedEventId);
+    }
+  } catch (error) {
+    setMessage(error.message, 'error');
+  }
+};
+
+eventSelect?.addEventListener('change', async (e) => {
+  const eventId = e.target.value;
+  if (eventId) {
+    await loadEventRegistrations(eventId);
+  } else {
+    eventRegistrationsContainer.style.display = 'none';
+  }
+});
+
 const verifyAdmin = async () => {
   if (!token) {
     redirectToLogin();
@@ -338,6 +484,7 @@ logoutBtn.addEventListener('click', () => {
 window.addEventListener('DOMContentLoaded', async () => {
   await verifyAdmin();
   await loadEvents();
+  await populateEventSelector();
   await loadRegistrations();
   await loadUsers();
 });

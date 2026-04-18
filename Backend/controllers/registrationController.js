@@ -135,6 +135,42 @@ const updateRegistrationStatus = async (req, res) => {
     }
 };
 
+// @desc    Get registrations for a specific event
+// @route   GET /api/registrations/event/:eventId
+// @access  Private/Admin
+const getRegistrationsByEvent = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+
+        // Verify event exists
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        // Get all registrations for this event
+        const registrations = await Registration.find({ event: eventId })
+            .populate('user', 'name email')
+            .populate('event', 'title date location maxSlots availableSlots');
+        
+        res.status(200).json({
+            event: {
+                id: event._id,
+                title: event.title,
+                date: event.date,
+                location: event.location,
+                maxSlots: event.maxSlots,
+                availableSlots: event.availableSlots,
+                registrationCount: registrations.length
+            },
+            registrations
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 // @desc    Mark attendance for users (Bulk or single)
 // @route   PUT /api/registrations/attend
 // @access  Private/Admin
@@ -206,6 +242,7 @@ module.exports = {
     registerForEvent,
     getMyRegistrations,
     getAllRegistrations,
+    getRegistrationsByEvent,
     updateRegistrationStatus,
     markAttendance
 };
