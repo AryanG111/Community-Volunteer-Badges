@@ -59,6 +59,37 @@
         </div>
         <ul id="registrations-list" class="list"></ul>
       </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Volunteer profiles</h2>
+          <div class="search-container">
+            <input type="text" id="user-search" placeholder="Search by name or email..." />
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Events Joined</th>
+                <th>Badges Earned</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <tr>
+                <td colspan="4" class="loading-cell">Loading volunteers...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-controls">
+          <button id="prev-page" class="secondary-button" disabled>Previous</button>
+          <span id="page-info">Page 1 of 1</span>
+          <button id="next-page" class="secondary-button" disabled>Next</button>
+        </div>
+      </section>
     </div>
   </div>
 

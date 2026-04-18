@@ -4,8 +4,16 @@ const logoutBtn = document.getElementById('logout-btn');
 const createEventForm = document.getElementById('create-event-form');
 const activeEventsList = document.getElementById('active-events-list');
 const registrationsList = document.getElementById('registrations-list');
+const usersTableBody = document.getElementById('users-table-body');
+const userSearchInput = document.getElementById('user-search');
+const prevPageBtn = document.getElementById('prev-page');
+const nextPageBtn = document.getElementById('next-page');
+const pageInfoEl = document.getElementById('page-info');
 
 const token = localStorage.getItem('token');
+let currentUsersPage = 1;
+let usersSearchTerm = '';
+const USERS_PER_PAGE = 10;
 
 const formatDate = (dateString) => {
   if (!dateString) return 'Unknown';
@@ -79,6 +87,95 @@ const loadEvents = async () => {
     setMessage(error.message, 'error');
   }
 };
+
+const loadUsers = async (page = 1, search = '') => {
+  if (!token) {
+    redirectToLogin();
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users?page=${page}&limit=${USERS_PER_PAGE}&search=${search}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Unable to load volunteer profiles.');
+    }
+
+    const data = await response.json();
+    const { users, totalPages, currentPage } = data;
+    
+    currentUsersPage = currentPage;
+
+    if (users.length === 0) {
+      usersTableBody.innerHTML = '<tr><td colspan="4" class="empty-state-message">No volunteers found matching your query.</td></tr>';
+      updatePaginationControls(0, 0);
+      return;
+    }
+
+    const rows = users.map(user => {
+      const tr = document.createElement('tr');
+      
+      const displayName = user.name && user.name.trim() ? user.name : user.email.split('@')[0];
+      const eventsCount = user.eventsAttended ? user.eventsAttended.length : 0;
+      
+      tr.innerHTML = `
+        <td><strong>${displayName}</strong>${user.role === 'admin' ? ' <small>(Admin)</small>' : ''}</td>
+        <td>${user.email}</td>
+        <td>${eventsCount} events</td>
+        <td>
+          <div class="user-badges-list">
+            ${user.badges && user.badges.length > 0 
+              ? user.badges.map(b => `<span class="badge-tag">${b.name}</span>`).join('') 
+              : '<span class="small-text muted">None</span>'}
+          </div>
+        </td>
+      `;
+      return tr;
+    });
+
+    usersTableBody.replaceChildren(...rows);
+    updatePaginationControls(currentPage, totalPages);
+  } catch (error) {
+    usersTableBody.innerHTML = `<tr><td colspan="4" class="message error">${error.message}</td></tr>`;
+  }
+};
+
+const updatePaginationControls = (current, total) => {
+  if (total <= 1) {
+    prevPageBtn.disabled = true;
+    nextPageBtn.disabled = true;
+    pageInfoEl.textContent = total === 0 ? 'No users' : `Page 1 of 1`;
+    return;
+  }
+
+  prevPageBtn.disabled = current <= 1;
+  nextPageBtn.disabled = current >= total;
+  pageInfoEl.textContent = `Page ${current} of ${total}`;
+};
+
+let searchTimeout;
+userSearchInput?.addEventListener('input', (e) => {
+  usersSearchTerm = e.target.value.trim();
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    loadUsers(1, usersSearchTerm);
+  }, 400);
+});
+
+prevPageBtn?.addEventListener('click', () => {
+  if (currentUsersPage > 1) {
+    loadUsers(currentUsersPage - 1, usersSearchTerm);
+  }
+});
+
+nextPageBtn?.addEventListener('click', () => {
+  loadUsers(currentUsersPage + 1, usersSearchTerm);
+});
 
 const loadRegistrations = async () => {
   if (!token) {
@@ -242,4 +339,5 @@ window.addEventListener('DOMContentLoaded', async () => {
   await verifyAdmin();
   await loadEvents();
   await loadRegistrations();
+  await loadUsers();
 });

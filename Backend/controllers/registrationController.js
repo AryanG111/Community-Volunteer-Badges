@@ -135,9 +135,77 @@ const updateRegistrationStatus = async (req, res) => {
     }
 };
 
+// @desc    Mark attendance for users (Bulk or single)
+// @route   PUT /api/registrations/attend
+// @access  Private/Admin
+const markAttendance = async (req, res) => {
+    try {
+        const { registrationIds } = req.body; // Expecting an array of IDs
+
+        if (!registrationIds || !Array.isArray(registrationIds) || registrationIds.length === 0) {
+            return res.status(400).json({ message: 'No registration IDs provided' });
+        }
+
+        const updatedResults = [];
+        const now = new Date();
+
+        for (const id of registrationIds) {
+            const registration = await Registration.findById(id).populate('event user');
+            
+            if (!registration) continue;
+
+            // 1. Check if event is in the future
+            if (new Date(registration.event.date) > now) {
+                updatedResults.push({ id, status: 'error', message: 'Cannot mark attendance for future events' });
+                continue;
+            }
+
+            // 2. Only update if not already attended
+            if (registration.status !== 'attended') {
+                registration.status = 'attended';
+                await registration.save();
+
+                const user = await User.findById(registration.user._id);
+                const event = registration.event;
+
+                // Add to eventsAttended if not already there
+                const alreadyAttended = user.eventsAttended.some(e => 
+                    e.title === event.title && 
+                    new Date(e.date).getTime() === new Date(event.date).getTime()
+                );
+
+                if (!alreadyAttended) {
+                    user.eventsAttended.push({
+                        title: event.title,
+                        date: event.date,
+                        location: event.location
+                    });
+                    await user.save();
+                    
+                    // 3. Trigger Badge Logic
+                    await checkAndAwardBadges(user);
+                }
+                updatedResults.push({ id, status: 'success' });
+            } else {
+                updatedResults.push({ id, status: 'already_marked' });
+            }
+        }
+
+        res.status(200).json({
+            message: 'Attendance processing completed',
+            results: updatedResults
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     registerForEvent,
     getMyRegistrations,
     getAllRegistrations,
-    updateRegistrationStatus
+    updateRegistrationStatus,
+    markAttendance
 };
