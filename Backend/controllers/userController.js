@@ -12,10 +12,14 @@ const getProfile = async (req, res) => {
             .populate('badges.badge');
 
         if (user) {
-            await checkAndAwardBadges(user);
-            user = await User.findById(req.user._id)
-                .select('-password')
-                .populate('badges.badge');
+            const awarded = await checkAndAwardBadges(user);
+            
+            // Refetch only if newly awarded to get populated badges
+            if (awarded) {
+                user = await User.findById(req.user._id)
+                    .select('-password')
+                    .populate('badges.badge');
+            }
 
             const attendedCount = user.eventsAttended ? user.eventsAttended.length : 0;
             const registrationsCount = await Registration.countDocuments({ user: user._id });

@@ -97,7 +97,10 @@ const checkAndAwardBadges = async (user) => {
 
         let awarded = false;
         for (const badge of badges) {
-            const hasBadge = user.badges.some(b => b.badge && b.badge.toString() === badge._id.toString());
+            const hasBadge = user.badges.some(b => {
+                const currentId = b.badge._id ? b.badge._id.toString() : b.badge.toString();
+                return currentId === badge._id.toString();
+            });
             if (!hasBadge) {
                 user.badges.push({
                     badge: badge._id,
@@ -111,6 +114,7 @@ const checkAndAwardBadges = async (user) => {
         if (awarded) {
             await user.save();
         }
+        return awarded;
     } catch (error) {
         console.error('Error in checkAndAwardBadges:', error);
     }
