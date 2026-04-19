@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = ''; // Now relative since backend serves frontend
 const messageEl = document.getElementById('message');
 const logoutBtn = document.getElementById('logout-btn');
 const createEventForm = document.getElementById('create-event-form');

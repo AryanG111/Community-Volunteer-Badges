@@ -1,22 +1,7 @@
-const form = document.getElementById('login-form');
+const form = document.getElementById('signup-form');
 const messageEl = document.getElementById('message');
 
-const API_BASE_URL = 'http://localhost:5000';
-
-const getUserRole = async (token) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    });
-    const data = await response.json();
-    return data.role;
-  } catch (error) {
-    return 'normal';
-  }
-};
+const API_BASE_URL = ''; // Now relative since backend serves frontend
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -34,7 +19,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -45,17 +30,15 @@ form.addEventListener('submit', async (event) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Login failed.');
+      throw new Error(data.message || 'Signup failed.');
     }
 
-    messageEl.textContent = data.message || 'Login successful!';
+    messageEl.textContent = data.message || 'Signup successful!';
     messageEl.classList.add('success');
     
     if (data.token) {
       localStorage.setItem('token', data.token);
-      const role = data.user?.role || await getUserRole(data.token);
-      const redirectPage = role === 'admin' ? 'admin.html' : 'profile.html';
-      window.location.href = redirectPage;
+      window.location.href = 'profile.html';
     }
 
     form.reset();

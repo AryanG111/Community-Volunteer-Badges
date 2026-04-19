@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
@@ -30,13 +31,17 @@ app.use('/api/events', eventRoutes);
 app.use('/api/registrations', registrationRoutes);
 app.use('/api/badges', badgeRoutes);
 
-// Basic Route
-app.get('/', (req, res) => {
-    res.send('API is running...');
+// Serve Frontend Static Files
+const frontendPath = path.join(__dirname, './Frontend');
+app.use(express.static(frontendPath));
+
+// Catch-all route to serve the frontend index.html
+app.use((req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server v1.1 running on port ${PORT}`);
 });
