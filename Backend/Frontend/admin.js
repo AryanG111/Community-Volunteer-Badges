@@ -68,6 +68,7 @@ const loadEvents = async () => {
           <div>${formatDate(event.date)} • ${event.location}</div>
           <div>${event.description}</div>
           <div>Max participants: ${event.maxSlots}</div>
+          <button class="view-details-btn" data-id="${event._id}">View details & attendees</button>
         `;
         return li;
       },
@@ -75,6 +76,69 @@ const loadEvents = async () => {
     );
 
     activeEventsList.replaceChildren(...eventItems);
+    
+    // Add listeners for view details buttons
+    document.querySelectorAll('.view-details-btn').forEach(btn => {
+      btn.addEventListener('click', () => showEventDetails(btn.dataset.id));
+    });
+  } catch (error) {
+    setMessage(error.message, 'error');
+  }
+};
+
+const eventModal = document.getElementById('event-details-modal');
+const closeModal = document.querySelector('.close-modal');
+
+closeModal.onclick = () => {
+  eventModal.style.display = 'none';
+};
+
+window.onclick = (event) => {
+  if (event.target === eventModal) {
+    eventModal.style.display = 'none';
+  }
+};
+
+const showEventDetails = async (eventId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/events/${eventId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch event details');
+
+    const data = await response.json();
+    const { event, registrations, joinedCount } = data;
+
+    document.getElementById('modal-event-title').textContent = event.title;
+    document.getElementById('modal-event-info').innerHTML = `
+      <strong>Date:</strong> ${formatDate(event.date)}<br>
+      <strong>Location:</strong> ${event.location}<br>
+      <strong>Description:</strong> ${event.description}<br>
+      <strong>Total Capacity:</strong> ${event.maxSlots} slots
+    `;
+    document.getElementById('modal-joined-count').textContent = joinedCount;
+
+    const volunteersList = document.getElementById('modal-volunteers-list');
+    volunteersList.innerHTML = '';
+
+    if (registrations.length === 0) {
+      volunteersList.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#64748b;">No volunteers registered yet.</td></tr>';
+    } else {
+      registrations.forEach(reg => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${reg.user.name || 'N/A'}</td>
+          <td>${reg.user.email}</td>
+          <td><span class="badge-pill ${reg.status}">${reg.status}</span></td>
+        `;
+        volunteersList.appendChild(tr);
+      });
+    }
+
+    eventModal.style.display = 'block';
   } catch (error) {
     setMessage(error.message, 'error');
   }
