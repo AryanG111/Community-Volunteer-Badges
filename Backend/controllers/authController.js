@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 // @route   POST /api/auth/signup
 // @access  Public
 const signup = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, name, phone } = req.body;
 
     try {
         let user = await User.findOne({ email });
@@ -20,7 +20,8 @@ const signup = async (req, res) => {
         user = await User.create({
             email,
             password: hashedPassword,
-            name: req.body.name || ''
+            name: name || '',
+            phone: phone || ''
         });
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {

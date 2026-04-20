@@ -238,8 +238,112 @@ logoutBtn.addEventListener('click', () => {
   window.location.href = 'login.html';
 });
 
+const userTableBody = document.getElementById('user-table-body');
+const userSearchInput = document.getElementById('user-search');
+const userPagination = document.getElementById('user-pagination');
+
+let currentUserPage = 1;
+let currentSearch = '';
+
+const loadUsers = async (page = 1, search = '') => {
+  if (!token) {
+    redirectToLogin();
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users?page=${page}&limit=10&search=${search}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Unable to load users.');
+    }
+
+    const data = await response.json();
+    renderUserTable(data.users);
+    renderPagination(data.totalPages, data.currentPage);
+  } catch (error) {
+    setMessage(error.message, 'error');
+  }
+};
+
+const renderUserTable = (users) => {
+  userTableBody.innerHTML = '';
+
+  if (users.length === 0) {
+    userTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: #64748b;">No users found.</td></tr>';
+    return;
+  }
+
+  users.forEach((user) => {
+    const tr = document.createElement('tr');
+    
+    // Count events (based on eventsAttended array)
+    const eventsCount = user.eventsAttended ? user.eventsAttended.length : 0;
+    
+    // Format badges
+    const badgeHtml = user.badges && user.badges.length > 0 
+      ? user.badges.map(b => `<span class="badge-pill ${b.name.toLowerCase()}">${b.name}</span>`).join('')
+      : '<span style="color: #94a3b8; font-style: italic;">None</span>';
+
+    tr.innerHTML = `
+      <td>${user.name || 'N/A'}</td>
+      <td>${user.email}</td>
+      <td>${eventsCount}</td>
+      <td>${badgeHtml}</td>
+    `;
+    userTableBody.appendChild(tr);
+  });
+};
+
+const renderPagination = (totalPages, currentPage) => {
+  userPagination.innerHTML = '';
+  
+  if (totalPages <= 1) return;
+
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = 'Prev';
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.addEventListener('click', () => {
+    currentUserPage = currentPage - 1;
+    loadUsers(currentUserPage, currentSearch);
+  });
+  userPagination.appendChild(prevBtn);
+
+  for (let i = 1; i <= totalPages; i++) {
+    const pageBtn = document.createElement('button');
+    pageBtn.textContent = i;
+    if (i === currentPage) pageBtn.classList.add('active');
+    pageBtn.addEventListener('click', () => {
+      currentUserPage = i;
+      loadUsers(currentUserPage, currentSearch);
+    });
+    userPagination.appendChild(pageBtn);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = 'Next';
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.addEventListener('click', () => {
+    currentUserPage = currentPage + 1;
+    loadUsers(currentUserPage, currentSearch);
+  });
+  userPagination.appendChild(nextBtn);
+};
+
+userSearchInput.addEventListener('input', (e) => {
+  currentSearch = e.target.value.trim();
+  currentUserPage = 1;
+  loadUsers(currentUserPage, currentSearch);
+});
+
 window.addEventListener('DOMContentLoaded', async () => {
   await verifyAdmin();
   await loadEvents();
   await loadRegistrations();
+  await loadUsers();
 });

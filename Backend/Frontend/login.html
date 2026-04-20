@@ -1,35 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Community Volunteer Badges</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Community Volunteer</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .auth-card {
+      max-width: 450px;
+      margin: 0 auto;
+    }
+    .register-link {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.95rem;
+    }
+    .register-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <div class="card">
-      <h1>Login</h1>
-      <p>Enter your credentials to access your volunteer account.</p>
-
+    <div class="card auth-card">
+      <div class="eyebrow">Welcome Back</div>
+      <h1>Log In</h1>
+      <p class="subtitle">Access your account to manage your volunteering events and view your badges.</p>
+      
       <form id="login-form">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required placeholder="you@example.com" />
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required placeholder="you@example.com">
+        </div>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required placeholder="Your password" />
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="Your password">
+        </div>
 
-        <button type="submit">Login</button>
+        <button type="submit">Sign In</button>
       </form>
 
       <div id="message" class="message"></div>
-      
-      <p style="margin-top: 1rem; text-align: center;">
-        Don't have an account? <a href="index.html">Sign Up</a>
-      </p>
+
+      <div class="register-link">
+        Don't have an account? <a href="index.html">Sign up here</a>
+      </div>
     </div>
   </div>
-
   <script src="login.js"></script>
 </body>
 </html>
