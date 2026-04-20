@@ -91,6 +91,33 @@
     </div>
   </div>
 
+  <!-- Event Details Modal -->
+  <div id="event-details-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2 id="modal-event-title">Event Details</h2>
+      <p id="modal-event-info"></p>
+      
+      <div class="modal-section">
+        <h3>Registered Volunteers (<span id="modal-joined-count">0</span>)</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="modal-volunteers-list">
+              <!-- Volunteers will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <style>
     .search-input {
       width: 100%;
@@ -155,6 +182,67 @@
     .pagination button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 30px;
+      border: 1px solid #e2e8f0;
+      width: 80%;
+      max-width: 800px;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .close-modal {
+      color: #94a3b8;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close-modal:hover {
+      color: #1f2937;
+    }
+    .modal-section {
+      margin-top: 25px;
+    }
+    .modal h2 {
+      margin-bottom: 10px;
+      color: #1e293b;
+    }
+    .modal h3 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      color: #334155;
+    }
+    .view-details-btn {
+      margin-top: 10px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .view-details-btn:hover {
+      background: #e2e8f0;
+      color: #1e293b;
     }
   </style>
 

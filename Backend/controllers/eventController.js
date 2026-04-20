@@ -62,7 +62,34 @@ const getEvents = async (req, res) => {
     }
 };
 
+// @desc    Get event details (Admin)
+// @route   GET /api/events/:id
+// @access  Private/Admin
+const getEventDetails = async (req, res) => {
+    try {
+        const eventId = req.params.id;
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        const Registration = require('../models/Registration'); // Import Registration here to avoid cyclic dependency if any, but it's cleaner to have it at top if possible.
+        const registrations = await Registration.find({ event: eventId })
+            .populate('user', 'name email phone');
+
+        res.status(200).json({
+            event,
+            registrations,
+            joinedCount: registrations.length
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     createEvent,
-    getEvents
+    getEvents,
+    getEventDetails
 };
